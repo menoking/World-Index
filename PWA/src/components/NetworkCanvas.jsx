@@ -48,7 +48,6 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
     cssH: CANVAS_H,
   });
 
-  // 高 DPI 初始化
   const setupCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -64,34 +63,18 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
 
     const ctx = canvas.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    // 居中网络内容
-    s.viewport.x = (s.cssW - CANVAS_W) / 2;
-    s.viewport.y = (s.cssH - CANVAS_H) / 2;
   }, []);
 
   useEffect(() => {
     setupCanvas();
-    const onResize = () => setupCanvas();
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    window.addEventListener('resize', setupCanvas);
+    return () => window.removeEventListener('resize', setupCanvas);
   }, [setupCanvas]);
 
-  useEffect(() => {
-    stateRef.current.theme = theme;
-  }, [theme]);
-
-  useEffect(() => {
-    stateRef.current.nodes = nodes;
-  }, [nodes]);
-
-  useEffect(() => {
-    stateRef.current.links = links;
-  }, [links]);
-
-  useEffect(() => {
-    stateRef.current.particles = particles;
-  }, [particles]);
+  useEffect(() => { stateRef.current.theme = theme; }, [theme]);
+  useEffect(() => { stateRef.current.nodes = nodes; }, [nodes]);
+  useEffect(() => { stateRef.current.links = links; }, [links]);
+  useEffect(() => { stateRef.current.particles = particles; }, [particles]);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -103,24 +86,29 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
     stepForceLayout(s.nodes, s.links, CANVAS_W, CANVAS_H, 0.055);
     moveParticles(s.particles, CANVAS_W, CANVAS_H);
 
-    const { scale, x: vx, y: vy } = s.viewport;
-    const toScreen = (x, y) => ({ x: x * scale + vx, y: y * scale + vy });
+    // 居中偏移量
+    const tx = Math.max(0, (s.cssW - CANVAS_W) / 2);
+    const ty = Math.max(0, (s.cssH - CANVAS_H) / 2);
 
-    // background — cover full canvas logical area
+    const { scale, x: vx, y: vy } = s.viewport;
+    const toScreen = (x, y) => ({ x: x * scale + vx + tx, y: y * scale + vy + ty });
+
+    // 全画布背景
     ctx.fillStyle = palette.background;
     ctx.fillRect(0, 0, s.cssW, s.cssH);
 
+    // 辉光（跟随内容居中）
     ctx.beginPath();
     ctx.fillStyle = palette.glowA;
-    ctx.arc(s.cssW * 0.34, s.cssH * 0.28, 116, 0, Math.PI * 2);
+    ctx.arc(tx + CANVAS_W * 0.34, ty + CANVAS_H * 0.28, 116, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.beginPath();
     ctx.fillStyle = palette.glowB;
-    ctx.arc(s.cssW * 0.72, s.cssH * 0.7, 132, 0, Math.PI * 2);
+    ctx.arc(tx + CANVAS_W * 0.72, ty + CANVAS_H * 0.7, 132, 0, Math.PI * 2);
     ctx.fill();
 
-    // particles
+    // 粒子
     s.particles.forEach((p) => {
       const pt = toScreen(p.x, p.y);
       ctx.beginPath();
@@ -129,7 +117,7 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
       ctx.fill();
     });
 
-    // links
+    // 连线
     s.links.forEach((link) => {
       const sp = toScreen(link.source.x, link.source.y);
       const tp = toScreen(link.target.x, link.target.y);
@@ -141,7 +129,7 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
       ctx.stroke();
     });
 
-    // nodes
+    // 节点
     s.nodes.forEach((node) => {
       const positive = node.change >= 0;
       const pt = toScreen(node.x, node.y);
@@ -163,7 +151,7 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
       ctx.arc(pt.x, pt.y, radius + 2, 0, Math.PI * 2);
       ctx.stroke();
 
-      // label
+      // 标签
       const fontSize = Math.max(7, Math.min(15, Math.round((node.radius >= 16 ? 10 : node.radius >= 11 ? 8 : 7) * Math.sqrt(scale))));
       const labelWidth = Math.max(30, node.name.length * fontSize + 10);
       const labelHeight = fontSize + 8;
@@ -190,42 +178,20 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
     return () => { running = false; };
   }, [draw]);
 
-  useImperativeHandle(ref, () => ({
-    draw,
-  }), [draw]);
+  useImperativeHandle(ref, () => ({ draw }), [draw]);
 
+  // 屏幕坐标 → 内容逻辑坐标（去掉居中偏移）
   const getCanvasPoint = useCallback((clientX, clientY) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
+    const s = stateRef.current;
+    const tx = Math.max(0, (rect.width - CANVAS_W) / 2);
+    const ty = Math.max(0, (rect.height - CANVAS_H) / 2);
     return {
-      x: ((clientX - rect.left) / rect.width) * CANVAS_W,
-      y: ((clientY - rect.top) / rect.height) * CANVAS_H,
+      x: clientX - rect.left - tx,
+      y: clientY - rect.top - ty,
     };
-  }, []);
-
-  // DPR 变化时重设 canvas 分辨率
-  useEffect(() => {
-    const handleResize = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const dpr = window.devicePixelRatio || 1;
-      stateRef.current.dpr = dpr;
-
-      const rect = canvas.parentElement.getBoundingClientRect();
-      const w = rect.width || CANVAS_W;
-      const h = rect.height || CANVAS_H;
-
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      canvas.style.width = w + 'px';
-      canvas.style.height = h + 'px';
-
-      const ctx = canvas.getContext('2d');
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const getTouchDistance = (a, b) => {
@@ -321,7 +287,7 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
     s.touchState = null;
   }, [onNodeTap]);
 
-  // Mouse support for desktop
+  // 鼠标事件
   const handleMouseDown = useCallback((e) => {
     const fake = { touches: [{ clientX: e.clientX, clientY: e.clientY }] };
     handleTouchStart(fake);
@@ -337,7 +303,7 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
     handleTouchEnd();
   }, [handleTouchEnd]);
 
-  // Wheel zoom
+  // 滚轮缩放
   const handleWheel = useCallback((e) => {
     e.preventDefault();
     const s = stateRef.current;

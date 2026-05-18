@@ -26,9 +26,18 @@ export default async function handler(req, res) {
       },
     });
 
-    const data = await response.json();
-    res.status(200).json(data);
+    if (!response.ok) {
+      return res.status(502).json({ error: `Upstream returned ${response.status}` });
+    }
+
+    const text = await response.text();
+    try {
+      const data = JSON.parse(text);
+      return res.status(200).json(data);
+    } catch {
+      return res.status(502).json({ error: 'Invalid JSON response', raw: text.slice(0, 200) });
+    }
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 }
