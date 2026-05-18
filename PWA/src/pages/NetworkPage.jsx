@@ -29,7 +29,6 @@ export default function NetworkPage() {
     try {
       setError('');
       const data = await fetchHotSectors(fundType, forceRefresh);
-      console.log('[NetworkPage] sectors loaded:', data.length);
       const enriched = data.map((item) => ({
         ...item,
         netInflowText: formatMoney(item.netInflow),

@@ -13,15 +13,11 @@ const EASTMONEY_BASE_PARAMS = {
 
 const VALIDMARK = 'aKVEnBbJF9Nip2Wjf4de/fSvA8W3X3iB4L6vT0Y5cxvZbEfEm17udZKUD2qy37dLRY3bzzHLDv+up/Yn3OTo5Q==';
 
-// 开发环境走 Vite 代理，生产环境需配置反向代理或 CORS
-const API_BASE = import.meta.env.DEV
-  ? '/api/eastmoney'
-  : 'https://fundmobapi.eastmoney.com';
-
-const URL_SUBJECT_LIST = `${API_BASE}/FundMNewApi/FundMNSubjectList`;
-const URL_FUND_RANK = `${API_BASE}/FundMNewApi/FundMNRank`;
-const URL_FUND_DETAIL = `${API_BASE}/FundMNewApi/FundMNDetailInformation`;
-const URL_FUND_HOLDINGS = `${API_BASE}/FundMNewApi/FundMNInverstPosition`;
+// 统一走代理：开发 Vite proxy，生产 Vercel serverless
+const URL_SUBJECT_LIST = '/api/eastmoney/FundMNewApi/FundMNSubjectList';
+const URL_FUND_RANK = '/api/eastmoney/FundMNewApi/FundMNRank';
+const URL_FUND_DETAIL = '/api/eastmoney/FundMNewApi/FundMNDetailInformation';
+const URL_FUND_HOLDINGS = '/api/eastmoney/FundMNewApi/FundMNInverstPosition';
 
 export const CATEGORIES = [
   { key: 'astock', label: 'A股基金', fundType: '0' },
@@ -52,7 +48,6 @@ async function request(url, params = {}) {
     .join('&');
 
   const fullUrl = `${url}${query ? '?' + query : ''}`;
-  console.log('[API] 请求:', fullUrl);
 
   try {
     const res = await fetch(fullUrl, {
@@ -64,11 +59,8 @@ async function request(url, params = {}) {
       },
     });
 
-    console.log('[API] 响应状态:', res.status, res.ok);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    console.log('[API] 响应数据:', json);
-    return json;
+    return await res.json();
   } catch (err) {
     console.error('[API] 请求失败:', fullUrl, err);
     throw err;
