@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useTheme } from '../hooks/useTheme';
@@ -61,16 +61,24 @@ export default function SectorDetailPage() {
 
     const measure = () => {
       const rect = el.getBoundingClientRect();
-      setMapSize({ w: rect.width, h: rect.height });
+      if (rect.width > 0 && rect.height > 0) {
+        setMapSize((prev) => {
+          if (Math.abs(prev.w - rect.width) < 2 && Math.abs(prev.h - rect.height) < 2) return prev;
+          return { w: rect.width, h: rect.height };
+        });
+      }
     };
 
     measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+    const onResize = () => requestAnimationFrame(measure);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [funds.length]);
 
-  const spiralFunds = computeSpiralLayout(funds, mapSize.w, mapSize.h);
+  const spiralFunds = useMemo(
+    () => computeSpiralLayout(funds, mapSize.w, mapSize.h),
+    [funds, mapSize.w, mapSize.h]
+  );
 
   const goRank = useCallback(() => {
     navigate('/rank');

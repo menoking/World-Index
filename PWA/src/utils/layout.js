@@ -139,6 +139,16 @@ export function hitTestNode(nodes, x, y) {
 
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 
+function collides(x, y, half, placed, gap) {
+  for (let i = 0; i < placed.length; i++) {
+    const p = placed[i];
+    const dx = x - p.x;
+    const dy = y - p.y;
+    if (Math.sqrt(dx * dx + dy * dy) < half + p.halfSize + gap) return true;
+  }
+  return false;
+}
+
 export function computeSpiralLayout(funds, width, height) {
   if (!funds.length || width < 100 || height < 100) return funds;
 
@@ -146,20 +156,48 @@ export function computeSpiralLayout(funds, width, height) {
   const centerX = width / 2;
   const centerY = height / 2;
   const n = sorted.length;
+  const gap = 6;
 
-  const centerHalf = sorted[0].halfSize || Math.round(sorted[0].size / 2);
-  const outerHalf = sorted[n - 1].halfSize || Math.round(sorted[n - 1].size / 2);
-  const maxRadius = Math.min(width, height) / 2 - centerHalf - outerHalf - 4;
-  const b = n > 1 ? maxRadius / (n * GOLDEN_ANGLE) : 0;
+  const maxRadius = Math.min(width, height) / 2 - sorted[0].halfSize - 4;
+  const placed = [];
 
-  return sorted.map((fund, i) => {
-    if (i === 0) return { ...fund, x: centerX, y: centerY };
+  for (let i = 0; i < n; i++) {
+    const fund = sorted[i];
 
-    const theta = i * GOLDEN_ANGLE;
-    const r = b * theta;
-    const x = centerX + r * Math.cos(theta);
-    const y = centerY + r * Math.sin(theta);
+    if (i === 0) {
+      placed.push({ ...fund, x: centerX, y: centerY });
+      continue;
+    }
 
-    return { ...fund, x, y };
-  });
+    let theta = i * GOLDEN_ANGLE;
+    let found = false;
+
+    for (let attempt = 0; attempt < 400; attempt++) {
+      const r = maxRadius * Math.sqrt(theta / (n * GOLDEN_ANGLE));
+      if (r > maxRadius) break;
+
+      const x = centerX + r * Math.cos(theta);
+      const y = centerY + r * Math.sin(theta);
+
+      if (!collides(x, y, fund.halfSize, placed, gap)) {
+        placed.push({ ...fund, x, y });
+        found = true;
+        break;
+      }
+
+      theta += 0.1;
+    }
+
+    if (!found) {
+      const fallbackR = maxRadius * 0.88;
+      const fallbackTheta = i * GOLDEN_ANGLE;
+      placed.push({
+        ...fund,
+        x: centerX + fallbackR * Math.cos(fallbackTheta),
+        y: centerY + fallbackR * Math.sin(fallbackTheta),
+      });
+    }
+  }
+
+  return placed;
 }
