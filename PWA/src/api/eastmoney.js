@@ -14,10 +14,14 @@ const EASTMONEY_BASE_PARAMS = {
 const VALIDMARK = 'aKVEnBbJF9Nip2Wjf4de/fSvA8W3X3iB4L6vT0Y5cxvZbEfEm17udZKUD2qy37dLRY3bzzHLDv+up/Yn3OTo5Q==';
 
 // 统一走代理：开发 Vite proxy，生产 Vercel serverless
-const URL_SUBJECT_LIST = '/api/eastmoney/FundMNewApi/FundMNSubjectList';
-const URL_FUND_RANK = '/api/eastmoney/FundMNewApi/FundMNRank';
-const URL_FUND_DETAIL = '/api/eastmoney/FundMNewApi/FundMNDetailInformation';
-const URL_FUND_HOLDINGS = '/api/eastmoney/FundMNewApi/FundMNInverstPosition';
+const URL_PROXY = '/api/eastmoney';
+
+const ENDPOINTS = {
+  subjectList: 'FundMNewApi/FundMNSubjectList',
+  fundRank: 'FundMNewApi/FundMNRank',
+  fundDetail: 'FundMNewApi/FundMNDetailInformation',
+  fundHoldings: 'FundMNewApi/FundMNInverstPosition',
+};
 
 export const CATEGORIES = [
   { key: 'astock', label: 'A股基金', fundType: '0' },
@@ -40,14 +44,14 @@ const CHANGE_FIELD_MAP = {
   all: 'SYL_LN',
 };
 
-async function request(url, params = {}) {
-  const merged = { ...EASTMONEY_BASE_PARAMS, ...params };
+async function request(endpoint, params = {}) {
+  const merged = { endpoint, ...EASTMONEY_BASE_PARAMS, ...params };
   const query = Object.entries(merged)
     .filter(([, v]) => v !== undefined && v !== null && v !== '')
     .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
     .join('&');
 
-  const fullUrl = `${url}${query ? '?' + query : ''}`;
+  const fullUrl = `${URL_PROXY}?${query}`;
 
   try {
     const res = await fetch(fullUrl, {
@@ -160,13 +164,13 @@ export async function fetchHotSectors(fundType, forceRefresh, cache = {}) {
 }
 
 async function fetchHotSectorsFromSubjects(fundType) {
-  const raw = await request(URL_SUBJECT_LIST);
+  const raw = await request(ENDPOINTS.subjectList);
   const list = unwrapList(raw);
   if (!list.length) return { data: [], time: '' };
 
   const subjects = list.slice(0, 24);
   const changePromises = subjects.map((item) =>
-    request(URL_FUND_RANK, {
+    request(ENDPOINTS.fundRank, {
       FundType: fundType,
       SortColumn: 'RZDF',
       Sort: 'desc',
@@ -202,7 +206,7 @@ async function fetchHotSectorsFromSubjects(fundType) {
 }
 
 async function fetchHotSectorsFromFunds(fundType) {
-  const raw = await request(URL_FUND_RANK, {
+  const raw = await request(ENDPOINTS.fundRank, {
     FundType: fundType,
     SortColumn: 'RZDF',
     Sort: 'desc',
@@ -247,7 +251,7 @@ export async function fetchFundRank({ scope, sectorId, period, fundType, rawCode
     if (purchasable) params.BUY = 'true';
     if (scope === 'sector' && code) params.TOPICAL = code;
 
-    const raw = await request(URL_FUND_RANK, params);
+    const raw = await request(ENDPOINTS.fundRank, params);
     const list = unwrapList(raw);
     return list
       .filter((item) => !purchasable || item.BUY === true)
@@ -285,7 +289,7 @@ export async function fetchSectorFunds(sectorId, fundType, rawCode, ensureSector
     };
     if (code) params.TOPICAL = code;
 
-    const raw = await request(URL_FUND_RANK, params);
+    const raw = await request(ENDPOINTS.fundRank, params);
     const list = unwrapList(raw);
     if (!list.length) return [];
 
@@ -320,7 +324,7 @@ export async function fetchSectorFunds(sectorId, fundType, rawCode, ensureSector
 }
 
 export async function fetchFundDetail(code) {
-  const raw = await request(URL_FUND_DETAIL, { FCODE: code });
+  const raw = await request(ENDPOINTS.fundDetail, { FCODE: code });
   const d = raw.Datas || raw.data || {};
   return {
     name: d.SHORTNAME || '',
@@ -336,7 +340,7 @@ export async function fetchFundDetail(code) {
 }
 
 export async function fetchFundHoldings(code) {
-  const raw = await request(URL_FUND_HOLDINGS, { FCODE: code });
+  const raw = await request(ENDPOINTS.fundHoldings, { FCODE: code });
   const d = raw.Datas || {};
   return (d.fundStocks || []).map((s) => ({
     name: s.GPJC || '',

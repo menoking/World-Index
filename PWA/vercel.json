@@ -1,20 +1,4 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "rewrites": [
-    {
-      "source": "/api/eastmoney/:path*",
-      "destination": "/api/eastmoney/:path*"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/eastmoney/:path*",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET, OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "*" }
-      ]
-    }
-  ]
+  "outputDirectory": "dist"
 }
