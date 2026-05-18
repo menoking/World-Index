@@ -153,19 +153,22 @@ export function computeSpiralLayout(funds, width, height) {
 
   while (ringStart < sorted.length) {
     const ringMaxHalf = Math.max(...sorted.slice(ringStart).map((f) => f.halfSize));
-    const ringRadius = prevRadius + sorted[ringStart - 1].halfSize + ringMaxHalf + gap;
-    if (ringRadius > maxRadius) break;
+    let ringRadius = prevRadius + sorted[ringStart - 1].halfSize + ringMaxHalf + gap;
 
-    const circumference = 2 * Math.PI * ringRadius;
+    const tight = ringRadius > maxRadius;
+    if (tight) ringRadius = maxRadius;
+
     const ringFunds = [];
-    let accAngle = 0;
+    let totalWeight = 0;
+    let pushedFirst = false;
 
     for (let i = ringStart; i < sorted.length; i++) {
       const f = sorted[i];
       const needAngle = (f.size + gap) / ringRadius;
-      if (accAngle + needAngle > 2 * Math.PI && ringFunds.length > 0) break;
+      if (totalWeight + needAngle > 2 * Math.PI && pushedFirst) break;
       ringFunds.push(i);
-      accAngle += needAngle;
+      totalWeight += needAngle;
+      pushedFirst = true;
     }
 
     if (ringFunds.length === 0) {
@@ -173,32 +176,43 @@ export function computeSpiralLayout(funds, width, height) {
       continue;
     }
 
-    const angleStep = (2 * Math.PI) / ringFunds.length;
+    const slack = Math.max(0, 2 * Math.PI - totalWeight);
+    const extraPerFund = slack / ringFunds.length;
     const phase = ringStart * 0.52;
+    let angle = phase;
 
-    ringFunds.forEach((idx, j) => {
-      const angle = phase + j * angleStep;
+    ringFunds.forEach((idx) => {
+      const fund = sorted[idx];
+      const fundAngle = (fund.size + gap) / ringRadius + extraPerFund;
+      const midAngle = angle + fundAngle / 2;
       placed.push({
-        ...sorted[idx],
-        x: centerX + ringRadius * Math.cos(angle),
-        y: centerY + ringRadius * Math.sin(angle),
+        ...fund,
+        x: centerX + ringRadius * Math.cos(midAngle),
+        y: centerY + ringRadius * Math.sin(midAngle),
       });
+      angle += fundAngle;
     });
 
     prevRadius = ringRadius;
     ringStart = ringFunds[ringFunds.length - 1] + 1;
+
+    if (tight) break;
   }
 
   let leftover = ringStart;
-  while (leftover < sorted.length) {
-    const angle = leftover * 0.92;
-    const r = maxRadius * 0.92;
-    placed.push({
-      ...sorted[leftover],
-      x: centerX + r * Math.cos(angle),
-      y: centerY + r * Math.sin(angle),
-    });
-    leftover++;
+  const leftoverCount = sorted.length - leftover;
+  if (leftoverCount > 0) {
+    const angleStep = (2 * Math.PI) / leftoverCount;
+    const phase = leftover * 0.45;
+    for (let i = 0; i < leftoverCount; i++) {
+      const fund = sorted[leftover + i];
+      const angle = phase + i * angleStep;
+      placed.push({
+        ...fund,
+        x: centerX + maxRadius * Math.cos(angle),
+        y: centerY + maxRadius * Math.sin(angle),
+      });
+    }
   }
 
   return placed;
