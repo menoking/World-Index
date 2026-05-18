@@ -137,66 +137,68 @@ export function hitTestNode(nodes, x, y) {
   });
 }
 
-const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
-
-function collides(x, y, half, placed, gap) {
-  for (let i = 0; i < placed.length; i++) {
-    const p = placed[i];
-    const dx = x - p.x;
-    const dy = y - p.y;
-    if (Math.sqrt(dx * dx + dy * dy) < half + p.halfSize + gap) return true;
-  }
-  return false;
-}
-
 export function computeSpiralLayout(funds, width, height) {
   if (!funds.length || width < 100 || height < 100) return funds;
 
   const sorted = [...funds].sort((a, b) => b.scale - a.scale);
   const centerX = width / 2;
   const centerY = height / 2;
-  const n = sorted.length;
-  const gap = 6;
-
+  const gap = 10;
   const maxRadius = Math.min(width, height) / 2 - sorted[0].halfSize - 4;
-  const placed = [];
 
-  for (let i = 0; i < n; i++) {
-    const fund = sorted[i];
+  const placed = [{ ...sorted[0], x: centerX, y: centerY }];
 
-    if (i === 0) {
-      placed.push({ ...fund, x: centerX, y: centerY });
+  let ringStart = 1;
+  let prevRadius = 0;
+
+  while (ringStart < sorted.length) {
+    const ringMaxHalf = Math.max(...sorted.slice(ringStart).map((f) => f.halfSize));
+    const ringRadius = prevRadius + sorted[ringStart - 1].halfSize + ringMaxHalf + gap;
+    if (ringRadius > maxRadius) break;
+
+    const circumference = 2 * Math.PI * ringRadius;
+    const ringFunds = [];
+    let accAngle = 0;
+
+    for (let i = ringStart; i < sorted.length; i++) {
+      const f = sorted[i];
+      const needAngle = (f.size + gap) / ringRadius;
+      if (accAngle + needAngle > 2 * Math.PI && ringFunds.length > 0) break;
+      ringFunds.push(i);
+      accAngle += needAngle;
+    }
+
+    if (ringFunds.length === 0) {
+      prevRadius = ringRadius;
       continue;
     }
 
-    let theta = i * GOLDEN_ANGLE;
-    let found = false;
+    const angleStep = (2 * Math.PI) / ringFunds.length;
+    const phase = ringStart * 0.52;
 
-    for (let attempt = 0; attempt < 400; attempt++) {
-      const r = maxRadius * Math.sqrt(theta / (n * GOLDEN_ANGLE));
-      if (r > maxRadius) break;
-
-      const x = centerX + r * Math.cos(theta);
-      const y = centerY + r * Math.sin(theta);
-
-      if (!collides(x, y, fund.halfSize, placed, gap)) {
-        placed.push({ ...fund, x, y });
-        found = true;
-        break;
-      }
-
-      theta += 0.1;
-    }
-
-    if (!found) {
-      const fallbackR = maxRadius * 0.88;
-      const fallbackTheta = i * GOLDEN_ANGLE;
+    ringFunds.forEach((idx, j) => {
+      const angle = phase + j * angleStep;
       placed.push({
-        ...fund,
-        x: centerX + fallbackR * Math.cos(fallbackTheta),
-        y: centerY + fallbackR * Math.sin(fallbackTheta),
+        ...sorted[idx],
+        x: centerX + ringRadius * Math.cos(angle),
+        y: centerY + ringRadius * Math.sin(angle),
       });
-    }
+    });
+
+    prevRadius = ringRadius;
+    ringStart = ringFunds[ringFunds.length - 1] + 1;
+  }
+
+  let leftover = ringStart;
+  while (leftover < sorted.length) {
+    const angle = leftover * 0.92;
+    const r = maxRadius * 0.92;
+    placed.push({
+      ...sorted[leftover],
+      x: centerX + r * Math.cos(angle),
+      y: centerY + r * Math.sin(angle),
+    });
+    leftover++;
   }
 
   return placed;

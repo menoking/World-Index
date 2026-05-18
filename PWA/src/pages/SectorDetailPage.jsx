@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useTheme } from '../hooks/useTheme';
@@ -55,7 +55,7 @@ export default function SectorDetailPage() {
 
   useEffect(() => { loadFunds(); }, [loadFunds]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = mapRef.current;
     if (!el) return;
 
@@ -73,7 +73,7 @@ export default function SectorDetailPage() {
     const onResize = () => requestAnimationFrame(measure);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
-  }, [funds.length]);
+  }, [funds]);
 
   const spiralFunds = useMemo(
     () => computeSpiralLayout(funds, mapSize.w, mapSize.h),
