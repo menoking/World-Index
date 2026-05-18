@@ -18,10 +18,10 @@ export default function SectorDetailPage() {
   const { themeClass, themeText, toggleTheme } = useTheme();
   const { setCurrentSector, setCurrentFundType, fetchHotSectors: loadSectors } = useApp();
 
-  const sectorName = decodeURIComponent(searchParams.get('name') || '板块');
+  const sectorName = searchParams.get('name') || '板块';
   const fundType = searchParams.get('fundType') || '0';
-  const rawCode = decodeURIComponent(searchParams.get('rawCode') || '');
-  const sectorChange = decodeURIComponent(searchParams.get('change') || '');
+  const rawCode = searchParams.get('rawCode') || '';
+  const sectorChange = searchParams.get('change') || '';
   const isPositive = sectorChange.startsWith('+');
 
   const [funds, setFunds] = useState([]);
