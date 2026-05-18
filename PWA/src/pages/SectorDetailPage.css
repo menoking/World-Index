@@ -1,0 +1,51 @@
+.detail-page { padding-bottom: 20px; }
+
+.detail-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.detail-subtitle { margin-top: 5px; color: var(--text-secondary); font-size: 13px; }
+.detail-actions { display: flex; flex: 0 0 auto; gap: 6px; }
+
+.rank-button {
+  flex: 0 0 auto; width: 66px; height: 30px; margin: 0; padding: 0;
+  border: 0; border-radius: 4px; background: #e94b5f; color: #ffffff;
+  font-size: 12px; line-height: 30px; cursor: pointer;
+}
+
+.heatmap-area { overflow: hidden; width: 100%; height: 380px; border: 1px solid var(--card-border); border-radius: 4px; background: var(--network-bg); }
+
+.map-grid {
+  position: relative; width: 100%; height: 380px;
+  background:
+    linear-gradient(90deg, rgba(23, 32, 51, 0.05) 0.5px, transparent 0.5px),
+    linear-gradient(rgba(23, 32, 51, 0.05) 0.5px, transparent 0.5px),
+    radial-gradient(circle at 28% 26%, rgba(233, 75, 95, 0.1), transparent 24%),
+    radial-gradient(circle at 70% 58%, rgba(22, 161, 119, 0.08), transparent 26%),
+    var(--network-bg);
+  background-size: 36px 36px, 36px 36px, 100% 100%, 100% 100%, 100% 100%;
+}
+
+.fund-node {
+  position: absolute; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border-color: rgba(23, 32, 51, 0.16); border-style: solid;
+  border-radius: 999px; box-shadow: 0 7px 18px rgba(23, 32, 51, 0.12);
+  color: #ffffff; text-align: center; cursor: pointer;
+}
+
+.node-company { max-width: 56px; overflow: hidden; font-size: 11px; font-weight: 700; line-height: 1.1; text-overflow: ellipsis; white-space: nowrap; }
+.node-change { margin-top: 3px; font-size: 10px; font-weight: 700; }
+
+.fund-strip { display: flex; gap: 8px; overflow-x: auto; margin-top: 12px; padding-bottom: 4px; white-space: nowrap; }
+
+.fund-card {
+  flex: 0 0 160px; min-width: 0; padding: 11px;
+  border: 1px solid var(--card-border); border-radius: 4px;
+  background: var(--card-bg); cursor: pointer;
+}
+
+.fund-card .fund-name, .fund-card .fund-meta { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fund-card .fund-name { color: var(--text-primary); font-size: 14px; font-weight: 700; }
+.fund-card .fund-meta, .fund-card .fund-bottom { color: var(--text-secondary); font-size: 12px; }
+.fund-card .fund-meta { margin-top: 5px; }
+.fund-card .fund-bottom { display: flex; justify-content: space-between; gap: 9px; margin-top: 11px; }
+.rise { color: var(--positive); }
+.fall { color: var(--negative); }

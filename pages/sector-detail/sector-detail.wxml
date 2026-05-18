@@ -1,0 +1,41 @@
+<view class="page detail-page {{themeClass}}">
+  <view class="detail-header">
+    <view>
+      <view class="section-title">{{sectorName}}</view>
+      <view class="detail-subtitle">板块内基金热力分布</view>
+    </view>
+    <view class="detail-actions">
+      <button class="theme-toggle" bindtap="toggleTheme">{{themeText}}</button>
+      <button class="rank-button" bindtap="goRank">看排名</button>
+    </view>
+  </view>
+
+  <movable-area class="heatmap-area">
+    <movable-view class="heatmap-canvas" direction="all" scale="true" scale-min="0.8" scale-max="1.8">
+      <view class="map-grid">
+        <view
+          class="fund-node"
+          wx:for="{{funds}}"
+          wx:key="id"
+          style="left: {{item.x}}%; top: {{item.y}}%; width: {{item.size}}rpx; height: {{item.size}}rpx; margin-left: -{{item.halfSize}}rpx; margin-top: -{{item.halfSize}}rpx; background: {{item.color}}; border-width: {{item.borderWidth}}rpx;"
+          data-id="{{item.id}}"
+          bindtap="showFund"
+        >
+          <text class="node-company">{{item.companyShort}}</text>
+          <text class="node-change">{{item.changeText}}</text>
+        </view>
+      </view>
+    </movable-view>
+  </movable-area>
+
+  <view class="fund-strip">
+    <view class="fund-card" wx:for="{{funds}}" wx:key="code" data-id="{{item.id}}" bindtap="showFund">
+      <view class="fund-name">{{item.name}}</view>
+      <view class="fund-meta">{{item.code}}</view>
+      <view class="fund-bottom">
+        <text>规模 {{item.scale}} 亿</text>
+        <text class="{{item.change >= 0 ? 'rise' : 'fall'}}">{{item.changeText}}</text>
+      </view>
+    </view>
+  </view>
+</view>

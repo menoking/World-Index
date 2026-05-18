@@ -1,0 +1,72 @@
+<view class="page index-page {{themeClass}}">
+  <view class="hero">
+    <view>
+      <view class="section-title">
+        <text>世界网络</text>
+        <text class="fetch-time" wx:if="{{fetchTime}}">{{fetchTime}} 更新</text>
+      </view>
+      <view class="hero-subtitle">资金流向驱动的板块关系图</view>
+    </view>
+    <view class="hero-actions">
+      <button class="refresh-button" bindtap="refreshData">刷新</button>
+      <button class="theme-toggle" bindtap="toggleTheme">{{themeText}}</button>
+      <button class="rank-button" bindtap="goRank">热度指数</button>
+    </view>
+  </view>
+
+  <view class="category-tabs">
+    <view
+      class="{{currentCategory === item.fundType ? 'ctab active' : 'ctab'}}"
+      wx:for="{{categories}}"
+      wx:key="fundType"
+      data-type="{{item.fundType}}"
+      bindtap="switchCategory"
+    >{{item.label}}</view>
+  </view>
+
+  <view class="summary">
+    <view class="summary-item">
+      <text class="summary-value">{{topSector.name || '--'}}</text>
+      <text class="summary-label">当前热区</text>
+    </view>
+    <view class="summary-item">
+      <text class="summary-value">{{topSector.netInflowText || '--'}}</text>
+      <text class="summary-label">净流入</text>
+    </view>
+    <view class="summary-item">
+      <text class="summary-value rise">{{topSector.changeText || '--'}}</text>
+      <text class="summary-label">估算涨幅</text>
+    </view>
+  </view>
+
+  <view class="canvas-panel">
+    <canvas
+      canvas-id="worldNetwork"
+      id="worldNetwork"
+      class="network-canvas"
+      disable-scroll="true"
+      bindtouchstart="onCanvasTap"
+      bindtouchmove="onCanvasMove"
+      bindtouchend="onCanvasEnd"
+      bindtouchcancel="onCanvasEnd"
+    ></canvas>
+  </view>
+
+  <view class="network-caption">双指缩放 · 拖动画布平移 · 拖动节点重排网络 · 点击节点进入详情</view>
+
+  <view class="sector-list">
+    <view
+      class="sector-chip"
+      wx:for="{{sectors}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="openSectorFromList"
+    >
+      <view class="chip-main">
+        <text class="chip-name">{{item.name}}</text>
+        <text class="chip-money">{{item.netInflowText}}</text>
+      </view>
+      <text class="{{item.change >= 0 ? 'chip-change rise' : 'chip-change fall'}}">{{item.changeText}}</text>
+    </view>
+  </view>
+</view>

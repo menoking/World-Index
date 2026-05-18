@@ -1,0 +1,55 @@
+<view class="page fund-page {{themeClass}}">
+  <view class="fund-header" wx:if="{{detail}}">
+    <view>
+      <view class="section-title">{{detail.name}}</view>
+      <view class="fund-subtitle">{{detail.type}} · {{detail.code}}</view>
+    </view>
+    <button class="theme-toggle" bindtap="toggleTheme">{{themeText}}</button>
+  </view>
+
+  <view class="info-grid" wx:if="{{detail}}">
+    <view class="info-cell">
+      <text class="info-value">{{detail.company || '--'}}</text>
+      <text class="info-label">基金公司</text>
+    </view>
+    <view class="info-cell">
+      <text class="info-value">{{detail.manager || '--'}}</text>
+      <text class="info-label">基金经理</text>
+    </view>
+    <view class="info-cell">
+      <text class="info-value">{{detail.scaleText || '--'}}</text>
+      <text class="info-label">基金规模</text>
+    </view>
+    <view class="info-cell">
+      <text class="info-value">{{detail.established || '--'}}</text>
+      <text class="info-label">成立日期</text>
+    </view>
+  </view>
+
+  <view class="section-title holdings-title">十大重仓股</view>
+
+  <view class="holdings-table" wx:if="{{holdings.length}}">
+    <view class="table-header">
+      <text class="col-rank">序号</text>
+      <text class="col-name">股票名称</text>
+      <text class="col-industry">行业</text>
+      <text class="col-weight">占比</text>
+      <text class="col-change">变动</text>
+    </view>
+    <view class="table-row" wx:for="{{holdings}}" wx:key="code">
+      <text class="col-rank">{{index + 1}}</text>
+      <text class="col-name">{{item.name}}</text>
+      <text class="col-industry">{{item.industry}}</text>
+      <text class="col-weight">{{item.weight}}%</text>
+      <text class="col-change {{item.change === '增持' ? 'rise' : item.change === '减持' ? 'fall' : 'neutral'}}">{{item.change}}</text>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !holdings.length}}">
+    <view class="empty-title">暂无持仓数据</view>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

@@ -1,0 +1,39 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/rank/rank",
+    "pages/sector-detail/sector-detail",
+    "pages/fund-detail/fund-detail"
+  ],
+  "window": {
+    "backgroundColor": "#f6f7fb",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "世界指数",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#7a8294",
+    "selectedColor": "#e94b5f",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "世界网络",
+        "iconPath": "static/icon-worldnet.png",
+        "selectedIconPath": "static/icon-worldnet.png"
+      },
+      {
+        "pagePath": "pages/rank/rank",
+        "text": "热度指数",
+        "iconPath": "static/icon-hotexponent.png",
+        "selectedIconPath": "static/icon-hotexponent.png"
+      }
+    ]
+  },
+  "resolveAlias": {
+    "~/*": "/*"
+  },
+  "sitemapLocation": "sitemap.json"
+}

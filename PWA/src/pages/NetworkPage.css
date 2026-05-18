@@ -1,0 +1,56 @@
+.index-page { padding-bottom: 24px; }
+
+.hero { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.hero-actions { display: flex; flex: 0 0 auto; gap: 6px; }
+
+.fetch-time { margin-left: 7px; color: var(--text-secondary); font-size: 11px; font-weight: 400; }
+
+.refresh-button {
+  flex: 0 0 auto; width: 48px; height: 30px; margin: 0; padding: 0;
+  border: 1px solid var(--card-border); border-radius: 4px; background: var(--card-bg);
+  color: var(--text-secondary); font-size: 12px; line-height: 30px; cursor: pointer;
+}
+
+.hero-subtitle { margin-top: 5px; color: var(--text-secondary); font-size: 13px; }
+
+.category-tabs {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; height: 38px;
+  padding: 4px; margin-bottom: 12px; border: 1px solid var(--card-border);
+  border-radius: 4px; background: var(--card-bg);
+}
+
+.ctab { border-radius: 3px; color: var(--text-secondary); font-size: 12px; font-weight: 600; line-height: 29px; text-align: center; cursor: pointer; }
+.ctab.active { background: #e94b5f; color: #ffffff; }
+
+.rank-button {
+  flex: 0 0 auto; min-width: 78px; height: 32px; margin: 0; padding: 0 11px;
+  border: 0; border-radius: 4px; background: #e94b5f; color: #ffffff;
+  font-size: 13px; line-height: 32px; cursor: pointer;
+}
+
+.summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+
+.summary-item {
+  min-width: 0; padding: 11px 9px; border: 1px solid var(--card-border);
+  border-radius: 4px; background: var(--card-bg);
+}
+
+.summary-value { display: block; overflow: hidden; color: var(--text-primary); font-size: 15px; font-weight: 700; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
+.summary-label { display: block; margin-top: 4px; color: var(--text-secondary); font-size: 11px; }
+
+.canvas-panel { overflow: hidden; height: 380px; border: 1px solid var(--card-border); border-radius: 4px; background: var(--network-bg); }
+
+.network-caption { margin-top: 7px; color: var(--text-secondary); font-size: 11px; text-align: center; }
+
+.sector-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+
+.sector-chip { min-width: 0; padding: 11px; border: 1px solid var(--card-border); border-radius: 4px; background: var(--card-bg); cursor: pointer; }
+
+.chip-main { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.chip-name, .chip-money { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip-name { color: var(--text-primary); font-size: 14px; font-weight: 700; }
+.chip-money { color: var(--text-secondary); font-size: 11px; }
+
+.chip-change { display: block; margin-top: 7px; font-size: 13px; font-weight: 700; }
+.rise { color: var(--positive); }
+.fall { color: var(--negative); }

@@ -1,0 +1,240 @@
+.detail-page {
+  padding-bottom: 40rpx;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.detail-subtitle {
+  margin-top: 10rpx;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+}
+
+.detail-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 12rpx;
+}
+
+.rank-button {
+  flex: 0 0 auto;
+  width: 132rpx;
+  height: 60rpx;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8rpx;
+  background: #e94b5f;
+  color: #ffffff;
+  font-size: 24rpx;
+  line-height: 60rpx;
+}
+
+.rank-button::after,
+.modal-button::after {
+  border: 0;
+}
+
+.heatmap-area {
+  overflow: hidden;
+  width: 100%;
+  height: 760rpx;
+  border: 1rpx solid var(--card-border);
+  border-radius: 8rpx;
+  background: var(--network-bg);
+}
+
+.heatmap-canvas {
+  width: 100%;
+  height: 760rpx;
+}
+
+.map-grid {
+  position: relative;
+  width: 100%;
+  height: 760rpx;
+  background:
+    linear-gradient(90deg, rgba(23, 32, 51, 0.05) 1rpx, transparent 1rpx),
+    linear-gradient(rgba(23, 32, 51, 0.05) 1rpx, transparent 1rpx),
+    radial-gradient(circle at 28% 26%, rgba(233, 75, 95, 0.1), transparent 24%),
+    radial-gradient(circle at 70% 58%, rgba(22, 161, 119, 0.08), transparent 26%),
+    var(--network-bg);
+  background-size: 72rpx 72rpx, 72rpx 72rpx, 100% 100%, 100% 100%, 100% 100%;
+}
+
+.map-grid::after {
+  position: absolute;
+  top: 130rpx;
+  right: 80rpx;
+  bottom: 110rpx;
+  left: 90rpx;
+  border: 3rpx solid rgba(23, 32, 51, 0.08);
+  border-radius: 42% 58% 46% 54%;
+  content: "";
+}
+
+.fund-node {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-color: rgba(23, 32, 51, 0.16);
+  border-style: solid;
+  border-radius: 999rpx;
+  box-shadow: 0 14rpx 36rpx rgba(23, 32, 51, 0.12);
+  color: #ffffff;
+  text-align: center;
+}
+
+.node-company {
+  max-width: 112rpx;
+  overflow: hidden;
+  font-size: 22rpx;
+  font-weight: 700;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.node-change {
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.fund-strip {
+  display: flex;
+  gap: 16rpx;
+  overflow-x: auto;
+  margin-top: 24rpx;
+  padding-bottom: 8rpx;
+  white-space: nowrap;
+}
+
+.fund-card {
+  flex: 0 0 320rpx;
+  min-width: 0;
+  padding: 22rpx;
+  border: 1rpx solid var(--card-border);
+  border-radius: 8rpx;
+  background: var(--card-bg);
+}
+
+.fund-name,
+.fund-meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fund-name {
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.fund-meta,
+.fund-bottom {
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+.fund-meta {
+  margin-top: 10rpx;
+}
+
+.fund-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 18rpx;
+  margin-top: 22rpx;
+}
+
+.rise {
+  color: var(--positive);
+}
+
+.fall {
+  color: var(--negative);
+}
+
+.modal-mask {
+  position: fixed;
+  z-index: 20;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(23, 32, 51, 0.36);
+}
+
+.fund-modal {
+  width: 100%;
+  padding: 34rpx 32rpx 48rpx;
+  border-radius: 8rpx 8rpx 0 0;
+  background: var(--card-bg);
+}
+
+.modal-title {
+  color: var(--text-primary);
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.modal-code {
+  margin-top: 10rpx;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+.modal-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18rpx;
+  margin-top: 28rpx;
+}
+
+.modal-stats > view {
+  padding: 22rpx;
+  border: 1rpx solid var(--card-border);
+  border-radius: 8rpx;
+  background: var(--page-bg);
+}
+
+.stat-value,
+.stat-label {
+  display: block;
+}
+
+.stat-value {
+  color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.stat-label {
+  margin-top: 8rpx;
+  color: var(--text-secondary);
+  font-size: 22rpx;
+}
+
+.modal-button {
+  height: 72rpx;
+  margin: 34rpx 0 0;
+  border: 0;
+  border-radius: 8rpx;
+  background: #e94b5f;
+  color: #ffffff;
+  font-size: 28rpx;
+  line-height: 72rpx;
+}
