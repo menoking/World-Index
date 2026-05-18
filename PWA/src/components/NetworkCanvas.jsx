@@ -44,6 +44,8 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
     rafId: null,
     theme: 'light',
     dpr: 1,
+    cssW: CANVAS_W,
+    cssH: CANVAS_H,
   });
 
   // 高 DPI 初始化
@@ -51,16 +53,21 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
     const canvas = canvasRef.current;
     if (!canvas) return;
     const dpr = window.devicePixelRatio || 1;
-    stateRef.current.dpr = dpr;
+    const s = stateRef.current;
+    s.dpr = dpr;
 
     const rect = canvas.getBoundingClientRect();
-    const w = rect.width;
-    const h = rect.height;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
+    s.cssW = rect.width;
+    s.cssH = rect.height;
+    canvas.width = s.cssW * dpr;
+    canvas.height = s.cssH * dpr;
 
     const ctx = canvas.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // 居中网络内容
+    s.viewport.x = (s.cssW - CANVAS_W) / 2;
+    s.viewport.y = (s.cssH - CANVAS_H) / 2;
   }, []);
 
   useEffect(() => {
@@ -99,18 +106,18 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
     const { scale, x: vx, y: vy } = s.viewport;
     const toScreen = (x, y) => ({ x: x * scale + vx, y: y * scale + vy });
 
-    // background
+    // background — cover full canvas logical area
     ctx.fillStyle = palette.background;
-    ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    ctx.fillRect(0, 0, s.cssW, s.cssH);
 
     ctx.beginPath();
     ctx.fillStyle = palette.glowA;
-    ctx.arc(CANVAS_W * 0.34, CANVAS_H * 0.28, 116, 0, Math.PI * 2);
+    ctx.arc(s.cssW * 0.34, s.cssH * 0.28, 116, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.beginPath();
     ctx.fillStyle = palette.glowB;
-    ctx.arc(CANVAS_W * 0.72, CANVAS_H * 0.7, 132, 0, Math.PI * 2);
+    ctx.arc(s.cssW * 0.72, s.cssH * 0.7, 132, 0, Math.PI * 2);
     ctx.fill();
 
     // particles
