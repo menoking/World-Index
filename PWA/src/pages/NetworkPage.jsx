@@ -75,17 +75,14 @@ export default function NetworkPage() {
       return;
     }
     setCurrentSector({ id: node.id, name: node.name, rawCode: node.rawCode || '' });
-    navigate(`/sector/${node.id}?name=${encodeURIComponent(node.name)}&fundType=${category}&rawCode=${encodeURIComponent(node.rawCode || '')}`);
+    const change = encodeURIComponent(node.changeText || '');
+    navigate(`/sector/${node.id}?name=${encodeURIComponent(node.name)}&fundType=${category}&rawCode=${encodeURIComponent(node.rawCode || '')}&change=${change}`);
   }, [category, navigate, setCurrentSector]);
 
   const goRank = useCallback(() => {
     setCurrentFundType(category);
     navigate('/rank');
   }, [category, setCurrentFundType, navigate]);
-
-  const openSectorFromList = useCallback((sector) => {
-    handleNodeTap(sector);
-  }, [handleNodeTap]);
 
   return (
     <div className={`page index-page ${themeClass}`}>
@@ -147,18 +144,6 @@ export default function NetworkPage() {
       )}
 
       <div className="network-caption">双指缩放 / 滚轮缩放 · 拖动平移 · 拖动节点重排网络 · 点击节点进入详情</div>
-
-      <div className="sector-list">
-        {sectors.map((item) => (
-          <div key={item.id} className="sector-chip" onClick={() => openSectorFromList(item)}>
-            <div className="chip-main">
-              <span className="chip-name">{item.name}</span>
-              <span className="chip-money">{item.netInflowText}</span>
-            </div>
-            <span className={`chip-change ${item.change >= 0 ? 'rise' : 'fall'}`}>{item.changeText}</span>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

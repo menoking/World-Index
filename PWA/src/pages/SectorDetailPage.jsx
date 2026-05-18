@@ -21,6 +21,8 @@ export default function SectorDetailPage() {
   const sectorName = decodeURIComponent(searchParams.get('name') || '板块');
   const fundType = searchParams.get('fundType') || '0';
   const rawCode = decodeURIComponent(searchParams.get('rawCode') || '');
+  const sectorChange = decodeURIComponent(searchParams.get('change') || '');
+  const isPositive = sectorChange.startsWith('+');
 
   const [funds, setFunds] = useState([]);
 
@@ -34,12 +36,13 @@ export default function SectorDetailPage() {
     const data = await fetchSectorFunds(sectorId, fundType, rawCode || null, ensureSector);
     const maxScale = Math.max(...data.map((item) => item.scale), 1);
     setFunds(data.map((item) => {
-      const size = Math.round(92 + (item.scale / maxScale) * 58);
+      // rpx → px 换算 (小程序 750rpx 设计稿 → CSS px)
+      const size = Math.round((92 + (item.scale / maxScale) * 58) / 2);
       return {
         ...item,
         size,
         halfSize: Math.round(size / 2),
-        borderWidth: Math.max(2, Math.round(Math.abs(item.change))),
+        borderWidth: Math.max(1, Math.min(3, Math.round(Math.abs(item.change) / 2))),
         color: getNodeColor(item.change),
         companyShort: (item.name || '').slice(0, 4),
         changeText: `${item.change >= 0 ? '+' : ''}${item.change.toFixed(2)}%`,
@@ -58,7 +61,14 @@ export default function SectorDetailPage() {
       <div className="detail-header">
         <div>
           <div className="section-title">{sectorName}</div>
-          <div className="detail-subtitle">板块内基金热力分布</div>
+          <div className="detail-subtitle">
+            板块内基金热力分布
+            {sectorChange && (
+              <span className={isPositive ? 'rise' : 'fall'} style={{ marginLeft: 12, fontWeight: 700 }}>
+                {sectorChange}
+              </span>
+            )}
+          </div>
         </div>
         <div className="detail-actions">
           <button className="theme-toggle" onClick={toggleTheme}>{themeText}</button>
@@ -75,12 +85,12 @@ export default function SectorDetailPage() {
               style={{
                 left: `${item.x}%`,
                 top: `${item.y}%`,
-                width: `${item.size}rpx`,
-                height: `${item.size}rpx`,
-                marginLeft: `-${item.halfSize}rpx`,
-                marginTop: `-${item.halfSize}rpx`,
+                width: `${item.size}px`,
+                height: `${item.size}px`,
+                marginLeft: `-${item.halfSize}px`,
+                marginTop: `-${item.halfSize}px`,
                 background: item.color,
-                borderWidth: `${item.borderWidth}rpx`,
+                borderWidth: `${item.borderWidth}px`,
               }}
               onClick={() => navigate(`/fund/${item.code}`)}
             >
