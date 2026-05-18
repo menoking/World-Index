@@ -43,7 +43,32 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
     touchState: null,
     rafId: null,
     theme: 'light',
+    dpr: 1,
   });
+
+  // 高 DPI 初始化
+  const setupCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    stateRef.current.dpr = dpr;
+
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }, []);
+
+  useEffect(() => {
+    setupCanvas();
+    const onResize = () => setupCanvas();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [setupCanvas]);
 
   useEffect(() => {
     stateRef.current.theme = theme;
@@ -170,6 +195,30 @@ const NetworkCanvas = forwardRef(function NetworkCanvas({ theme, nodes, links, p
       x: ((clientX - rect.left) / rect.width) * CANVAS_W,
       y: ((clientY - rect.top) / rect.height) * CANVAS_H,
     };
+  }, []);
+
+  // DPR 变化时重设 canvas 分辨率
+  useEffect(() => {
+    const handleResize = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const dpr = window.devicePixelRatio || 1;
+      stateRef.current.dpr = dpr;
+
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const w = rect.width || CANVAS_W;
+      const h = rect.height || CANVAS_H;
+
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const getTouchDistance = (a, b) => {
