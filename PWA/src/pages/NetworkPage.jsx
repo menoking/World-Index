@@ -15,7 +15,7 @@ export default function NetworkPage() {
   const { themeClass, themeText, toggleTheme, theme } = useTheme();
   const { currentFundType, setCurrentFundType, setCurrentSector, fetchTime, fetchHotSectors } = useApp();
 
-  const [category, setCategory] = useState('0');
+  const [category, setCategory] = useState(currentFundType || '0');
   const [sectors, setSectors] = useState([]);
   const [topSector, setTopSector] = useState({});
   const [error, setError] = useState('');
@@ -51,8 +51,8 @@ export default function NetworkPage() {
   }, [fetchHotSectors]);
 
   useEffect(() => {
-    loadSectors('0');
-  }, [loadSectors]);
+    loadSectors(category);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const switchCategory = useCallback((fundType) => {
     if (fundType === category) return;
