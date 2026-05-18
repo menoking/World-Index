@@ -136,3 +136,30 @@ export function hitTestNode(nodes, x, y) {
     return Math.sqrt(dx * dx + dy * dy) <= node.radius + 8;
   });
 }
+
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+
+export function computeSpiralLayout(funds, width, height) {
+  if (!funds.length || width < 100 || height < 100) return funds;
+
+  const sorted = [...funds].sort((a, b) => b.scale - a.scale);
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const n = sorted.length;
+
+  const centerHalf = sorted[0].halfSize || Math.round(sorted[0].size / 2);
+  const outerHalf = sorted[n - 1].halfSize || Math.round(sorted[n - 1].size / 2);
+  const maxRadius = Math.min(width, height) / 2 - centerHalf - outerHalf - 4;
+  const b = n > 1 ? maxRadius / (n * GOLDEN_ANGLE) : 0;
+
+  return sorted.map((fund, i) => {
+    if (i === 0) return { ...fund, x: centerX, y: centerY };
+
+    const theta = i * GOLDEN_ANGLE;
+    const r = b * theta;
+    const x = centerX + r * Math.cos(theta);
+    const y = centerY + r * Math.sin(theta);
+
+    return { ...fund, x, y };
+  });
+}

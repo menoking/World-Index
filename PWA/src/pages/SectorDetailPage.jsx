@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useTheme } from '../hooks/useTheme';
 import { fetchSectorFunds, fetchHotSectors } from '../api/eastmoney';
+import { computeSpiralLayout } from '../utils/layout';
 import './SectorDetailPage.css';
 
 function getNodeColor(change) {
@@ -25,6 +26,8 @@ export default function SectorDetailPage() {
   const isPositive = sectorChange.startsWith('+');
 
   const [funds, setFunds] = useState([]);
+  const [mapSize, setMapSize] = useState({ w: 0, h: 0 });
+  const mapRef = useRef(null);
 
   useEffect(() => {
     setCurrentSector({ id: sectorId, name: sectorName, rawCode });
@@ -35,8 +38,7 @@ export default function SectorDetailPage() {
     const ensureSector = () => loadSectors(fundType);
     const data = await fetchSectorFunds(sectorId, fundType, rawCode || null, ensureSector);
     const maxScale = Math.max(...data.map((item) => item.scale), 1);
-    setFunds(data.map((item) => {
-      // rpx → px 换算 (小程序 750rpx 设计稿 → CSS px)
+    const enriched = data.map((item) => {
       const size = Math.round((92 + (item.scale / maxScale) * 58) / 2);
       return {
         ...item,
@@ -47,10 +49,28 @@ export default function SectorDetailPage() {
         companyShort: (item.name || '').slice(0, 4),
         changeText: `${item.change >= 0 ? '+' : ''}${item.change.toFixed(2)}%`,
       };
-    }));
+    });
+    setFunds(enriched);
   }, [sectorId, fundType, rawCode, loadSectors]);
 
   useEffect(() => { loadFunds(); }, [loadFunds]);
+
+  useEffect(() => {
+    const el = mapRef.current;
+    if (!el) return;
+
+    const measure = () => {
+      const rect = el.getBoundingClientRect();
+      setMapSize({ w: rect.width, h: rect.height });
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const spiralFunds = computeSpiralLayout(funds, mapSize.w, mapSize.h);
 
   const goRank = useCallback(() => {
     navigate('/rank');
@@ -76,15 +96,15 @@ export default function SectorDetailPage() {
         </div>
       </div>
 
-      <div className="heatmap-area">
+      <div className="heatmap-area" ref={mapRef}>
         <div className="map-grid">
-          {funds.map((item) => (
+          {spiralFunds.map((item) => (
             <div
               key={item.id}
               className="fund-node"
               style={{
-                left: `${item.x}%`,
-                top: `${item.y}%`,
+                left: `${item.x}px`,
+                top: `${item.y}px`,
                 width: `${item.size}px`,
                 height: `${item.size}px`,
                 marginLeft: `-${item.halfSize}px`,
