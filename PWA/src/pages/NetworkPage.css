@@ -1,4 +1,4 @@
-.index-page { padding-bottom: 24px; }
+.index-page { max-width: 640px; margin: 0 auto; padding-bottom: 24px; }
 
 .hero { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .hero-actions { display: flex; flex: 0 0 auto; gap: 6px; }
@@ -38,7 +38,14 @@
 .summary-value { display: block; overflow: hidden; color: var(--text-primary); font-size: 15px; font-weight: 700; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
 .summary-label { display: block; margin-top: 4px; color: var(--text-secondary); font-size: 11px; }
 
-.canvas-panel { overflow: hidden; height: 380px; border: 1px solid var(--card-border); border-radius: 4px; background: var(--network-bg); }
+.canvas-panel {
+  overflow: hidden;
+  min-height: 380px;
+  height: calc(100vh - 280px);
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  background: var(--network-bg);
+}
 
 .network-caption { margin-top: 7px; color: var(--text-secondary); font-size: 11px; text-align: center; }
 

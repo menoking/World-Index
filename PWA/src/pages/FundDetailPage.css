@@ -1,4 +1,4 @@
-.fund-page { padding-bottom: 20px; }
+.fund-page { max-width: 640px; margin: 0 auto; padding-bottom: 20px; }
 
 .fund-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .fund-subtitle { margin-top: 5px; color: var(--text-secondary); font-size: 13px; }
