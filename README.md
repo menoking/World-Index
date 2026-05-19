@@ -86,6 +86,10 @@ The author has fully shifted to PWA development and launch. It can now be access
 * Domestic visit: [world-index.pages.dev](https://world-index.pages.dev/)
 * Overseas visit: [world-index-eight.vercel.app](https://world-index-eight.vercel.app/)
 
+<p align="center">
+  <img src="static\examples\WI_QR.png" width="1000">
+</p>
+
 ## 致谢 / Acknowledgement
 
 本项目数据来源为东方财富的公共接口，特此表示感谢。
