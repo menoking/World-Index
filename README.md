@@ -75,10 +75,16 @@ Sub Interface -- Growth Rate Rank
 
 由于微信小程序审核以金融类目为由拒审，因此应该不能上架微信小程序运行了。。。
 
-笔者全面转向PWA开发上线，现可通过访问：[世界指数](https://world-index-eight.vercel.app/)
+笔者全面转向PWA开发上线，现可通过以下方式访问：
+
+* 境内访问：[世界指数](https://world-index.pages.dev/)
+* 境外访问：[世界指数](https://world-index-eight.vercel.app/)
 
 The WeChat Mini Program was rejected during the review process due to the financial category. Therefore, it should not be available for operation on the WeChat Mini Program platform.
-The author has fully shifted to PWA development and launch. It can now be accessed by visiting: [world-index-eight.vercel.app](https://world-index-eight.vercel.app/)
+The author has fully shifted to PWA development and launch. It can now be accessed by visiting as follows:
+
+* Domestic visit: [world-index.pages.dev](https://world-index.pages.dev/)
+* Overseas visit: [world-index-eight.vercel.app](https://world-index-eight.vercel.app/)
 
 ## 致谢 / Acknowledgement
 
